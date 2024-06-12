@@ -4,21 +4,34 @@
 	import "$lib/global.scss";
 	import "greset";
 
-	const tones: ToneContext[] = [];
+	let tone: ToneContext | undefined;
+	let touchable = false;
 	let number = "";
 
+	function click(key: Key) {
+		if (!touchable) press(key);
+	}
+
+	function touch(key: Key) {
+		touchable = true;
+		press(key);
+	}
+
 	function press(key: Key) {
-		tones.push(startTone(key));
+		tone = startTone(key);
 		number += key.toString() + "\n";
 	}
 
-	function stopTones() {
-		tones.forEach((t) => t.stop());
-		tones.length = 0;
-	}
+	const stopTone = () => tone?.stop();
 </script>
 
-<svelte:window on:mouseup={stopTones} on:blur={stopTones} on:pagehide={stopTones} />
+<svelte:window
+	on:mouseup={stopTone}
+	on:blur={stopTone}
+	on:pagehide={stopTone}
+	on:touchend={stopTone}
+	on:touchstart|nonpassive|preventDefault
+/>
 
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 700 1648">
 	<path
@@ -36,7 +49,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(1)}
+		on:mousedown={() => click(1)}
+		on:touchstart|preventDefault={() => touch(1)}
 		d="M164 1084.5c23 8.5 54.75 32 48.5 57s-59 14.5-84.5 8-53-37-43.5-61 56.5-12.5 79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -45,7 +59,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(3)}
+		on:mousedown={() => click(3)}
+		on:touchstart|preventDefault={() => touch(3)}
 		d="M547.299 1080.34c-23 8.5-54.75 32-48.5 57s59 14.5 84.5 8 53-37 43.5-61-56.5-12.5-79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -54,7 +69,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(6)}
+		on:mousedown={() => click(6)}
+		on:touchstart|preventDefault={() => touch(6)}
 		d="M539.299 1196.34c-23 8.5-54.75 32-48.5 57s59 14.5 84.5 8 53-37 43.5-61-56.5-12.5-79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -63,7 +79,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(9)}
+		on:mousedown={() => click(9)}
+		on:touchstart|preventDefault={() => touch(9)}
 		d="M529.299 1317.34c-23 8.5-54.75 32-48.5 57s59 14.5 84.5 8 53-37 43.5-61-56.5-12.5-79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -78,7 +95,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(4)}
+		on:mousedown={() => click(4)}
+		on:touchstart|preventDefault={() => touch(4)}
 		d="M175.422 1205.34c23 8.5 54.75 32 48.5 57s-59 14.5-84.5 8-53-37-43.5-61 56.5-12.5 79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -87,7 +105,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(7)}
+		on:mousedown={() => click(7)}
+		on:touchstart|preventDefault={() => touch(7)}
 		d="M182.422 1321.34c23 8.5 54.75 32 48.5 57s-59 14.5-84.5 8-53-37-43.5-61 56.5-12.5 79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -102,7 +121,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(2)}
+		on:mousedown={() => click(2)}
+		on:touchstart|preventDefault={() => touch(2)}
 		d="M354.03 1105.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -111,7 +131,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(5)}
+		on:mousedown={() => click(5)}
+		on:touchstart|preventDefault={() => touch(5)}
 		d="M354.03 1220.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -120,7 +141,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(8)}
+		on:mousedown={() => click(8)}
+		on:touchstart|preventDefault={() => touch(8)}
 		d="M354.03 1340.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -129,7 +151,8 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => press(0)}
+		on:mousedown={() => click(0)}
+		on:touchstart|preventDefault={() => touch(0)}
 		d="M358.03 1459.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -154,11 +177,10 @@
 		letter-spacing: -0.55vh;
 		text-overflow: ellipsis;
 		overflow-y: hidden;
-		user-select: none;
-		fill: #081b00;
 		font-size: 3.45vh;
-		height: 18vh;
+		fill: #081b00;
 		width: 23.5vh;
+		height: 18vh;
 
 		position: absolute;
 		margin-left: -12vh;

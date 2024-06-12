@@ -1,5 +1,8 @@
 import type { Key } from "$lib";
 
+let ctx: AudioContext;
+let rootNode: GainNode;
+
 const tones: { [key in Key]: [number, number] } = {
 	"1": [697, 1209],
 	"2": [697, 1336],
@@ -18,26 +21,33 @@ export interface ToneContext {
 }
 
 export function startTone(tone: Key): ToneContext {
-	const ctx = new AudioContext();
-	const g = ctx.createGain();
-	g.connect(ctx.destination);
-	g.gain.value = 0.25;
+	if (!ctx) setupSynthesizer();
 
 	const o1 = ctx.createOscillator();
 	o1.frequency.value = tones[tone][0];
-	o1.connect(g);
+	o1.connect(rootNode);
 
 	const o2 = ctx.createOscillator();
 	o2.frequency.value = tones[tone][1];
-	o2.connect(g);
+	o2.connect(rootNode);
 
 	o1.start();
 	o2.start();
 
+	const minimum = new Promise((r) => setTimeout(r, 100));
+
 	return {
-		stop: () => {
-			g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.04);
-			setTimeout(() => ctx.close(), 50);
+		stop: async () => {
+			await minimum;
+			o1.stop();
+			o2.stop();
 		},
 	};
+}
+
+function setupSynthesizer() {
+	ctx = new AudioContext();
+	rootNode = ctx.createGain();
+	rootNode.connect(ctx.destination);
+	rootNode.gain.value = 0.25;
 }
