@@ -1,13 +1,15 @@
 <script lang="ts">
-	import "greset";
-	import "$lib/global.scss";
 	import { startTone, type ToneContext } from "$lib/tone";
 	import type { Key } from "$lib";
+	import "$lib/global.scss";
+	import "greset";
 
 	const tones: ToneContext[] = [];
+	let number = "";
 
 	function press(key: Key) {
 		tones.push(startTone(key));
+		number += key.toString() + "\n";
 	}
 
 	function stopTones() {
@@ -136,6 +138,8 @@
 	/>
 </svg>
 
+<div class="number">{number}</div>
+
 <style lang="scss">
 	svg {
 		height: calc(90vh - 30px);
@@ -143,5 +147,22 @@
 
 	path.clickthrough {
 		pointer-events: none;
+	}
+
+	.number {
+		font-family: Poxel, monospace;
+		letter-spacing: -0.55vh;
+		text-overflow: ellipsis;
+		overflow-y: hidden;
+		user-select: none;
+		fill: #081b00;
+		font-size: 3.45vh;
+		height: 18vh;
+		width: 23.5vh;
+
+		position: absolute;
+		margin-left: -12vh;
+		top: 30vh;
+		left: 50%;
 	}
 </style>
