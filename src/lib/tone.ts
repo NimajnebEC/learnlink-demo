@@ -20,8 +20,10 @@ export interface ToneContext {
 	stop: () => void;
 }
 
-export async function toneFor(tone: Key, ms: number) {
+export async function toneFor(tone: Key, ms: number, aborter?: AbortController) {
 	const ctx = startTone(tone, 0);
+	aborter?.signal.addEventListener("abort", ctx.stop);
+
 	await sleep(ms);
 	ctx.stop();
 }

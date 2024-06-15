@@ -1,7 +1,8 @@
 import type { Segment } from "./nodes";
+import { toneFor } from "./tone";
 
 function speak(text: string, aborter: AbortController) {
-	new Promise((r) => {
+	return new Promise((r) => {
 		const utterence = new SpeechSynthesisUtterance(text);
 		utterence.rate = 0.85;
 
@@ -11,15 +12,16 @@ function speak(text: string, aborter: AbortController) {
 	});
 }
 
-export function playSegment(segment: Segment, aborter: AbortController) {
-	if (segment.say) speak(segment.say, aborter);
+export async function playSegment(segment: Segment, aborter: AbortController) {
+	if (segment.tone) await toneFor(segment.tone, 1000, aborter);
+	if (segment.say) await speak(segment.say, aborter);
 	if (segment.play) {
 	}
 }
 
 export async function playSegments(segments: Segment[], aborter: AbortController) {
 	for (const segment of segments) {
-		playSegment(segment, aborter);
+		await playSegment(segment, aborter);
 		if (aborter.signal.aborted) return;
 	}
 }
