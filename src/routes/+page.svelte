@@ -1,35 +1,72 @@
 <script lang="ts">
-	import { startTone, type ToneContext } from "$lib/tone";
-	import type { Key } from "$lib";
+	import { startTone, toneFor, type ToneContext } from "$lib/tone";
+	import { sleep, telephone, type Key } from "$lib";
+	import { playSegments } from "$lib/playback";
+	import type { MenuNode } from "$lib/nodes";
+	import { homeNode } from "$lib/nodes";
 	import "$lib/global.scss";
 	import "greset";
 
+	let aborter: AbortController | null;
 	let tone: ToneContext | undefined;
-	let touchable = false;
+	let node: MenuNode | null;
 	let number = "";
 
-	function click(key: Key) {
-		if (!touchable) press(key);
-	}
-
-	function touch(key: Key) {
-		touchable = true;
-		press(key);
-	}
-
 	function press(key: Key) {
+		number += key.toString();
 		tone = startTone(key);
-		number += key.toString() + "\n";
+
+		if (node) {
+			const replace = node.press(key);
+			if (replace === null) return;
+			loadNode(replace);
+		}
+	}
+
+	async function hangup() {
+		aborter?.abort();
+		number = "";
+		node = null;
+
+		for (let i = 0; i < 3; i++) {
+			await toneFor(1, 100);
+			await sleep(75);
+		}
+	}
+
+	async function call() {
+		if (node) return; // Exit if already called
+		aborter = new AbortController();
+
+		if (!telephone.startsWith(number)) number = "";
+		for (let i = number.length; i < telephone.length; i++) {
+			if (aborter.signal.aborted) return;
+			const key = Number(telephone.charAt(i)) as Key;
+			number += key;
+
+			await toneFor(key, 75);
+			await sleep(50);
+		}
+
+		await sleep(250);
+		loadNode(homeNode);
+	}
+
+	async function loadNode(n: MenuNode) {
+		aborter?.abort();
+		aborter = new AbortController();
+		node = n;
+
+		playSegments(n.get(), aborter);
 	}
 
 	const stopTone = () => tone?.stop();
 </script>
 
 <svelte:window
-	on:mouseup={stopTone}
 	on:blur={stopTone}
 	on:pagehide={stopTone}
-	on:touchend={stopTone}
+	on:pointerup={stopTone}
 	on:touchstart|nonpassive|preventDefault
 />
 
@@ -49,8 +86,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(1)}
-		on:touchstart|preventDefault={() => touch(1)}
+		on:pointerdown={() => press(1)}
 		d="M164 1084.5c23 8.5 54.75 32 48.5 57s-59 14.5-84.5 8-53-37-43.5-61 56.5-12.5 79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -59,8 +95,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(3)}
-		on:touchstart|preventDefault={() => touch(3)}
+		on:pointerdown={() => press(3)}
 		d="M547.299 1080.34c-23 8.5-54.75 32-48.5 57s59 14.5 84.5 8 53-37 43.5-61-56.5-12.5-79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -69,8 +104,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(6)}
-		on:touchstart|preventDefault={() => touch(6)}
+		on:pointerdown={() => press(6)}
 		d="M539.299 1196.34c-23 8.5-54.75 32-48.5 57s59 14.5 84.5 8 53-37 43.5-61-56.5-12.5-79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -79,8 +113,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(9)}
-		on:touchstart|preventDefault={() => touch(9)}
+		on:pointerdown={() => press(9)}
 		d="M529.299 1317.34c-23 8.5-54.75 32-48.5 57s59 14.5 84.5 8 53-37 43.5-61-56.5-12.5-79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -95,8 +128,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(4)}
-		on:touchstart|preventDefault={() => touch(4)}
+		on:pointerdown={() => press(4)}
 		d="M175.422 1205.34c23 8.5 54.75 32 48.5 57s-59 14.5-84.5 8-53-37-43.5-61 56.5-12.5 79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -105,8 +137,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(7)}
-		on:touchstart|preventDefault={() => touch(7)}
+		on:pointerdown={() => press(7)}
 		d="M182.422 1321.34c23 8.5 54.75 32 48.5 57s-59 14.5-84.5 8-53-37-43.5-61 56.5-12.5 79.5-4Z"
 	/><path
 		fill="#414A3C"
@@ -121,8 +152,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(2)}
-		on:touchstart|preventDefault={() => touch(2)}
+		on:pointerdown={() => press(2)}
 		d="M354.03 1105.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -131,8 +161,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(5)}
-		on:touchstart|preventDefault={() => touch(5)}
+		on:pointerdown={() => press(5)}
 		d="M354.03 1220.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -141,8 +170,7 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(8)}
-		on:touchstart|preventDefault={() => touch(8)}
+		on:pointerdown={() => press(8)}
 		d="M354.03 1340.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
@@ -151,14 +179,38 @@
 	/><path
 		role="none"
 		fill="#DCD8C9"
-		on:mousedown={() => click(0)}
-		on:touchstart|preventDefault={() => touch(0)}
+		on:pointerdown={() => press(0)}
 		d="M358.03 1459.5c66.5 1 70.361 22 70 28.5-.361 6.5-13.5 49-70 47.5s-70.5-38.5-71-47.5 4.5-29.5 71-28.5Z"
 	/><path
 		fill="#414A3C"
 		class="clickthrough"
 		d="M357.682 1522.14c-4.061 0-7.561-.97-10.5-2.89-2.94-1.94-5.205-4.72-6.796-8.34-1.591-3.64-2.378-8.01-2.363-13.11.015-5.11.81-9.44 2.386-13 1.591-3.58 3.849-6.3 6.773-8.16 2.939-1.88 6.439-2.82 10.5-2.82 4.06 0 7.56.94 10.5 2.82 2.954 1.86 5.227 4.58 6.818 8.16 1.591 3.57 2.379 7.9 2.364 13 0 5.12-.796 9.5-2.387 13.13-1.591 3.64-3.856 6.42-6.795 8.34-2.924 1.91-6.424 2.87-10.5 2.87Zm0-9.21c2.424 0 4.386-1.23 5.886-3.7 1.5-2.49 2.243-6.3 2.227-11.43 0-3.37-.34-6.14-1.022-8.32-.682-2.2-1.629-3.84-2.841-4.91-1.212-1.08-2.629-1.62-4.25-1.62-2.409 0-4.356 1.22-5.841 3.66-1.485 2.43-2.235 6.16-2.25 11.19-.015 3.4.311 6.23.977 8.47.682 2.25 1.637 3.92 2.864 5.03 1.227 1.09 2.644 1.63 4.25 1.63Z"
 	/>
+	<path
+		fill="#D9D9D9"
+		on:pointerdown={call}
+		d="M222.72 895.145C231.053 897.604 236.048 917.276 269.033 936.246C302.018 955.215 335 961.89 335 961.89C335 961.89 335 1034.61 335 1035.66C335 1036.71 308.012 1035.66 279.694 1027.58C251.377 1019.5 249.044 1015.43 222.72 997.37C196.396 979.312 165.522 933.435 163.081 927.815C160.639 922.194 214.388 892.686 222.72 895.145Z"
+	/>
+	<path
+		role="none"
+		fill="#D9D9D9"
+		on:pointerdown={hangup}
+		d="M476.28 896.145C467.947 898.604 462.952 918.276 429.967 937.246C396.982 956.215 364 962.89 364 962.89C364 962.89 364 1035.61 364 1036.66C364 1037.71 390.988 1036.66 419.306 1028.58C447.623 1020.5 449.956 1016.43 476.28 998.37C502.604 980.312 533.478 934.435 535.919 928.815C538.361 923.194 484.612 893.686 476.28 896.145Z"
+	/>
+	<g>
+		<path
+			fill="#1D5C1C"
+			class="clickthrough"
+			d="M245.493 950.162C244.816 948.527 243.032 947.657 241.327 948.123L233.593 950.232C232.063 950.654 231 952.043 231 953.625C231 975.369 248.631 993 270.375 993C271.957 993 273.346 991.937 273.768 990.407L275.877 982.673C276.343 980.968 275.473 979.184 273.838 978.507L265.4 974.991C263.968 974.394 262.307 974.807 261.331 976.011L257.78 980.344C251.593 977.417 246.583 972.407 243.656 966.22L247.989 962.678C249.193 961.693 249.606 960.041 249.009 958.608L245.493 950.171V950.162Z"
+		/>
+	</g>
+	<g>
+		<path
+			fill="#A31E1E"
+			class="clickthrough"
+			d="M465.895 988.464C467.532 989.135 469.406 988.482 470.277 986.944L474.228 979.968C475.006 978.586 474.77 976.853 473.647 975.738C458.214 960.42 433.281 960.513 417.963 975.946C416.848 977.069 416.625 978.804 417.413 980.181L421.416 987.126C422.298 988.658 424.178 989.297 425.81 988.614L434.249 985.102C435.682 984.506 436.559 983.036 436.392 981.496L435.818 975.923C442.254 973.593 449.339 973.567 455.792 975.848L455.254 981.419C455.104 982.967 455.986 984.424 457.423 985.009L465.889 988.458L465.895 988.464Z"
+		/>
+	</g>
 </svg>
 
 <div class="number">{number}</div>
@@ -174,10 +226,12 @@
 
 	.number {
 		font-family: Poxel, monospace;
-		letter-spacing: -0.55vh;
 		text-overflow: ellipsis;
+		letter-spacing: -0.2vh;
+		word-break: break-all;
 		overflow-y: hidden;
 		font-size: 3.45vh;
+		user-select: none;
 		fill: #081b00;
 		width: 23.5vh;
 		height: 18vh;

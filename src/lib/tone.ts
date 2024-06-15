@@ -1,4 +1,4 @@
-import type { Key } from "$lib";
+import { sleep, type Key } from "$lib";
 
 let ctx: AudioContext;
 let rootNode: GainNode;
@@ -20,7 +20,13 @@ export interface ToneContext {
 	stop: () => void;
 }
 
-export function startTone(tone: Key): ToneContext {
+export async function toneFor(tone: Key, ms: number) {
+	const ctx = startTone(tone, 0);
+	await sleep(ms);
+	ctx.stop();
+}
+
+export function startTone(tone: Key, min: number = 100): ToneContext {
 	if (!ctx) setupSynthesizer();
 
 	const o1 = ctx.createOscillator();
@@ -34,10 +40,10 @@ export function startTone(tone: Key): ToneContext {
 	o1.start();
 	o2.start();
 
-	const minimum = new Promise((r) => setTimeout(r, 100));
+	const minimum = sleep(min);
 
 	return {
-		stop: async () => {
+		async stop() {
 			await minimum;
 			o1.stop();
 			o2.stop();
