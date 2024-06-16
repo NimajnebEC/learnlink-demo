@@ -8,8 +8,8 @@
 	import "$lib/global.scss";
 	import "greset";
 
+	let recording: Promise<Blob | null>;
 	let tone: ToneContext | undefined;
-	let recordProcessing: Promise<null>;
 	let aborter: AbortController;
 	let node: MenuNode | null;
 	let stream: MediaStream;
@@ -24,12 +24,15 @@
 		tone = startTone(key);
 
 		if (node) {
-			let next = await node.press(key);
+			let next = await node.press(key, () => {
+				aborter?.abort();
+				return recording;
+			});
+
 			if (next === null) return;
 
 			// Cleanup previous node
 			aborter?.abort();
-			if (recordProcessing) next = (await recordProcessing) ?? next;
 
 			loadNode(next);
 		}
@@ -70,26 +73,23 @@
 		node = n;
 
 		await playSegments(node.segments, aborter);
-		if (n.record)
-			recordProcessing = new Promise((resolve) => {
-				const recorder = new MediaRecorder(stream);
-				const chunks: BlobPart[] = [];
+		recording = new Promise((resolve) => {
+			const recorder = new MediaRecorder(stream);
+			const chunks: BlobPart[] = [];
 
-				recorder.addEventListener("dataavailable", (e) => {
-					chunks.push(e.data);
-				});
-
-				recorder.start();
-
-				aborter.signal.addEventListener("abort", () => recorder.stop());
-
-				recorder.addEventListener("stop", async () => {
-					const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
-
-					// @ts-ignore
-					resolve(await n.record(blob));
-				});
+			recorder.addEventListener("dataavailable", (e) => {
+				chunks.push(e.data);
 			});
+
+			recorder.start();
+
+			aborter.signal.addEventListener("abort", () => recorder.stop());
+
+			recorder.addEventListener("stop", async () => {
+				const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+				resolve(blob);
+			});
+		});
 	}
 
 	const stopTone = () => tone?.stop();

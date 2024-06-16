@@ -7,15 +7,9 @@ export interface Segment {
 	tone?: Key;
 }
 
-export interface MenuNode {
+export type MenuNode = {
 	segments: Segment[];
-	press: (key: Key) => Promise<MenuNode | null>;
-	record?: (data: Blob) => Promise<MenuNode | null>;
-}
-
-const emptyNode: MenuNode = {
-	segments: [],
-	press: async (key) => null,
+	press: (key: Key, recording: () => Promise<Blob | null>) => Promise<MenuNode | null>;
 };
 
 export const homeNode: MenuNode = {
@@ -33,16 +27,25 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 	}
 
 	if (record) segments.push({ say: "Press 0 to create." });
-	const node: MenuNode = {
+	const self: MenuNode = {
 		segments,
-		async press() {
+		async press(key) {
+			if (key != 0) {
+				const entry = entries.find((v) => v.index == key.toString());
+				if (entry) return await categoryNode(entry.code, record);
+				return self;
+			}
+
 			return {
 				segments: [
 					{ say: "Say category name after the tone. Press any key when finished" },
 					{ tone: 5 },
 				],
-				press: async () => emptyNode,
-				async record(blob) {
+				async press(_, recording) {
+					const blob = await recording();
+
+					if (!blob) return null;
+
 					const index = `${entries.length + 1}`;
 					const code = `${parent ?? ""}${index}`;
 					await db.category.add({
@@ -60,5 +63,5 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 		},
 	};
 
-	return node;
+	return self;
 }
