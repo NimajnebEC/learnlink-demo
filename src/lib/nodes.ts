@@ -36,6 +36,7 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 	const segments: Segment[] = [];
 
 	const entries = await db.category.where({ parent }).toArray();
+	if (entries.length == 0) segments.push({ say: "No entries found" });
 	for (const entry of entries) {
 		segments.push({ say: `Press ${entry.index} for` });
 		segments.push({ play: URL.createObjectURL(entry.name) });
@@ -103,6 +104,12 @@ async function recordLesson(category: string): Promise<MenuNode> {
 
 async function playLesson(category: string): Promise<MenuNode> {
 	const count = await db.lesson.where({ category }).count();
+
+	if (count == 0)
+		return {
+			segments: [{ say: "There are no lessons for this topic." }],
+			press: async () => null,
+		};
 
 	const self: MenuNode = {
 		segments: [

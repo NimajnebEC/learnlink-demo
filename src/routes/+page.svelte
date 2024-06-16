@@ -71,13 +71,15 @@
 		loadNode(homeNode);
 	}
 
-	async function loadNode(n: MenuNode) {
+	function loadNode(n: MenuNode) {
 		// Load new node
 		aborter = new AbortController();
 		node = n;
 
-		await playSegments(node.segments, aborter);
-		recording = new Promise((resolve) => {
+		recording = new Promise(async (resolve) => {
+			await playSegments(n.segments, aborter);
+			if (aborter.signal.aborted) resolve(null);
+
 			const recorder = new MediaRecorder(stream);
 			const chunks: BlobPart[] = [];
 
