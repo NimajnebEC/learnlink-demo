@@ -40,6 +40,9 @@
 
 	async function hangup() {
 		aborter?.abort();
+
+		if (node?.hangup) node.hangup(recording);
+
 		number = "";
 		node = null;
 
