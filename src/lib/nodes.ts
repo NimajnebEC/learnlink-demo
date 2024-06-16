@@ -105,7 +105,13 @@ async function playLesson(category: string): Promise<MenuNode> {
 	const count = await db.lesson.where({ category }).count();
 
 	const self: MenuNode = {
-		segments: [{ say: `Enter lesson number. There are ${count} lessons for this topic.` }],
+		segments: [
+			{
+				say: `Enter lesson number. There ${count == 1 ? "is" : "are"} ${count} lesson${
+					count == 1 ? "" : "s"
+				} for this topic.`,
+			},
+		],
 		async press(key) {
 			const lesson = await db.lesson.get(`${category}${key}`);
 			if (!lesson) return self;
