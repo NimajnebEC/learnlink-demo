@@ -101,16 +101,16 @@
 	const stopTone = () => tone?.stop();
 </script>
 
-<svelte:window
-	on:blur={stopTone}
-	on:pagehide={stopTone}
-	on:pointerup={stopTone}
-	on:touchstart|nonpassive|preventDefault
-/>
+<svelte:window on:blur={stopTone} on:pagehide={stopTone} on:pointerup={stopTone} />
 
 <Title />
 
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 700 1648">
+<svg
+	on:touchstart|nonpassive|preventDefault
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 700 1648"
+	fill="none"
+>
 	<path
 		fill="#363A40"
 		d="M36 105c13.5-69.5 47.5-65 76.5-79S341 0 341 0s211.5 8.5 240 21 53.5 14.5 74.5 84 39 343.5 44 587-32 817.5-44.5 848-11 85-101.5 92.5-197 15.5-197 15.5-114-6.5-199.5-15.5-85-43-97.5-92.5S0 895.5 1 692s21.5-517.5 35-587Z"
