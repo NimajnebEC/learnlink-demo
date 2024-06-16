@@ -1,38 +1,8 @@
-# create-svelte
+<p align="center">
+    <img src="logo.png">
+</p>
+<h3 align="center"> • <a href="https://crowdsolve.net/challenge/EfP-UK-24/p/256">Crowdsolve</a> • <a href="https://www.ewb-uk.org/upskill/design-challenges/engineering-for-people-design-challenge/">Engineering for People Design Challenge</a> • </h3>
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+The Pu Ngaol community faces a 96% school dropout rates as children start work on farms, in local businesses or as laborers. Furthermore, travelling to school in the rainy season is dangerous. LearnLink is a low-cost solution that allows teachers to record lessons for students to access anywhere with mobile coverage. With students able to continue education despite difficult circumstances, they gain the opportunity to graduate and learn the skills to develop innovative solutions for the village. [Learn More...](https://crowdsolve.net/challenge/EfP-UK-24/p/256/d)
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+This GitHub repository contains a prototype of what a phone call to the LearnLink server may look like.
