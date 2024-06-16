@@ -9,19 +9,21 @@
 		db.category.clear();
 		db.lesson.clear();
 	}
+
+	const open = (address: string) => window.open(address);
 </script>
 
 <div class="container">
 	<h1>Learn<span>Link</span></h1>
 	<p>Server phone call prototype.</p>
 	<div class="controls">
-		<a href="https://crowdsolve.net/challenge/EfP-UK-24/p/256" target="_blank">
+		<button on:pointerdown={() => open("https://crowdsolve.net/challenge/EfP-UK-24/p/256")}>
 			<Fa icon={faCheckToSlot} />
-		</a>
-		<a href="https://github.com/NimajnebEC/learnlink-prototype" target="_blank">
+		</button>
+		<button on:pointerdown={() => open("https://github.com/NimajnebEC/learnlink-prototype")}>
 			<Fa icon={faGithub} />
-		</a>
-		<button on:click={reset}>
+		</button>
+		<button on:pointerdown={reset}>
 			<Fa icon={faArrowRotateRight} />
 		</button>
 	</div>
@@ -50,9 +52,5 @@
 		font-size: 20px;
 		display: flex;
 		gap: 5px;
-
-		a {
-			color: black;
-		}
 	}
 </style>
