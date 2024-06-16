@@ -3,10 +3,23 @@
 	src: url("$lib/fonts/poxel/poxel-font.ttf");
 }
 
+@font-face {
+	font-family: "Comfortaa";
+	src: url("$lib/fonts/comfortaa/Comfortaa-VariableFont_wght.ttf");
+}
+
 body > div {
+	background-color: #52b2da;
 	justify-content: center;
 	flex-direction: column;
+	font-family: Comfortaa;
 	align-items: center;
 	display: flex;
 	height: 100vh;
+}
+
+button {
+	background: none;
+	border: none;
+	padding: 0;
 }

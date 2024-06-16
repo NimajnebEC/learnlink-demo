@@ -7,6 +7,7 @@
 	import { onMount } from "svelte";
 	import "$lib/global.scss";
 	import "greset";
+	import Title from "$lib/Title.svelte";
 
 	let recording: Promise<Blob | null>;
 	let tone: ToneContext | undefined;
@@ -104,6 +105,8 @@
 	on:pointerup={stopTone}
 	on:touchstart|nonpassive|preventDefault
 />
+
+<Title />
 
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 700 1648">
 	<path
