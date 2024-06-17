@@ -21,6 +21,8 @@
 
 	async function press(key: Key) {
 		number += key.toString();
+
+		tone?.stop();
 		tone = startTone(key);
 
 		if (node) {
