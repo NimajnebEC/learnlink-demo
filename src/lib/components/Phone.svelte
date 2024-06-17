@@ -91,7 +91,7 @@
 			aborter.signal.addEventListener("abort", () => recorder.stop());
 
 			recorder.addEventListener("stop", async () => {
-				const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+				const blob = new Blob(chunks);
 				resolve(blob);
 			});
 		});

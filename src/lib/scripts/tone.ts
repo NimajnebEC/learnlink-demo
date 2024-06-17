@@ -1,6 +1,6 @@
 import { sleep, type Key } from "$lib";
+import { context } from "./playback";
 
-let ctx: AudioContext;
 let rootNode: GainNode;
 
 const tones: { [key in Key]: [number, number] } = {
@@ -29,13 +29,13 @@ export async function toneFor(tone: Key, ms: number, aborter?: AbortController) 
 }
 
 export function startTone(tone: Key, min: number = 100): ToneContext {
-	if (!ctx) setupSynthesizer();
+	if (!rootNode) setupSynthesizer();
 
-	const o1 = ctx.createOscillator();
+	const o1 = context.createOscillator();
 	o1.frequency.value = tones[tone][0];
 	o1.connect(rootNode);
 
-	const o2 = ctx.createOscillator();
+	const o2 = context.createOscillator();
 	o2.frequency.value = tones[tone][1];
 	o2.connect(rootNode);
 
@@ -54,8 +54,7 @@ export function startTone(tone: Key, min: number = 100): ToneContext {
 }
 
 function setupSynthesizer() {
-	ctx = new AudioContext();
-	rootNode = ctx.createGain();
-	rootNode.connect(ctx.destination);
+	rootNode = context.createGain();
+	rootNode.connect(context.destination);
 	rootNode.gain.value = 0.25;
 }

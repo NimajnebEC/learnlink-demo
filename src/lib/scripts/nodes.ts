@@ -1,11 +1,11 @@
-import type { Key } from "$lib/scripts";
+import type { Key } from "$lib";
 import { db } from "./db";
 
 const LAYERS = 3;
 
 export interface Segment {
 	say?: string;
-	play?: string;
+	play?: string | ArrayBuffer;
 	tone?: Key;
 }
 
@@ -39,7 +39,7 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 	if (entries.length == 0) segments.push({ say: "No entries found" });
 	for (const entry of entries) {
 		segments.push({ say: `Press ${entry.index} for` });
-		segments.push({ play: URL.createObjectURL(entry.name) });
+		segments.push({ play: entry.name });
 	}
 
 	if (record) segments.push({ say: "Press 0 to create." });
@@ -65,7 +65,7 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 					const index = `${entries.length + 1}`;
 					const code = `${parent ?? ""}${index}`;
 					await db.category.add({
-						name: blob,
+						name: await blob.arrayBuffer(),
 						parent,
 						index,
 						code,
@@ -94,7 +94,7 @@ async function recordLesson(category: string): Promise<MenuNode> {
 
 			await db.lesson.add({
 				code: `${category}${index}`,
-				recording: blob,
+				recording: await blob.arrayBuffer(),
 				category,
 				index,
 			});
@@ -123,7 +123,7 @@ async function playLesson(category: string): Promise<MenuNode> {
 			const lesson = await db.lesson.get(`${category}${key}`);
 			if (!lesson) return self;
 			return {
-				segments: [{ play: URL.createObjectURL(lesson.recording) }],
+				segments: [{ play: lesson.recording }],
 				press: async () => null,
 			};
 		},

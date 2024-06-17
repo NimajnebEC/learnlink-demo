@@ -1,10 +1,15 @@
-<script>
+<script lang="ts">
+	import { initialise as initialisePlayback, play } from "$lib/scripts/playback";
+	import audio from "$lib/assets/confirmation.mp3?url";
 	import Phone from "$lib/components/Phone.svelte";
 	import Title from "$lib/components/Title.svelte";
 
 	let initialised = false;
 
 	function initialise() {
+		initialisePlayback();
+		play(audio, new AbortController());
+
 		const u = new SpeechSynthesisUtterance("initialising");
 		u.volume = 0;
 		speechSynthesis.speak(u);

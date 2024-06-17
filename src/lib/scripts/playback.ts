@@ -1,10 +1,18 @@
+import audio from "$lib/assets/confirmation.mp3?url";
+
 import type { Segment } from "./nodes";
 import { toneFor } from "./tone";
+
+export let context: AudioContext;
+
+export function initialise() {
+	context = new window.AudioContext();
+}
 
 function speak(text: string, aborter: AbortController) {
 	return new Promise((r) => {
 		const utterence = new SpeechSynthesisUtterance(text);
-		utterence.rate = 0.85;
+		utterence.rate = 0.95;
 
 		speechSynthesis.speak(utterence);
 		aborter.signal.addEventListener("abort", () => speechSynthesis.cancel());
@@ -12,12 +20,20 @@ function speak(text: string, aborter: AbortController) {
 	});
 }
 
-function play(src: string, aborter: AbortController) {
-	return new Promise((r) => {
-		const audio = new Audio(src);
-		aborter.signal.addEventListener("abort", () => audio.pause());
-		audio.addEventListener("ended", r);
-		audio.play();
+export function play(src: string | ArrayBuffer, aborter: AbortController) {
+	return new Promise(async (r) => {
+		const source = context.createBufferSource();
+
+		let buffer: ArrayBuffer;
+		if (src instanceof ArrayBuffer) buffer = src;
+		else buffer = await fetch(audio).then((r) => r.arrayBuffer());
+
+		source.buffer = await context.decodeAudioData(buffer);
+		source.connect(context.destination);
+
+		aborter.signal.addEventListener("abort", () => source.stop());
+		source.addEventListener("ended", r);
+		source.start();
 	});
 }
 

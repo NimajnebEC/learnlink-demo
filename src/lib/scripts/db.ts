@@ -4,14 +4,14 @@ export interface Category {
 	code: string;
 	index: string;
 	parent: string;
-	name: Blob;
+	name: ArrayBuffer;
 }
 
 export interface Lesson {
 	code: string;
 	index: string;
 	category: string;
-	recording: Blob;
+	recording: ArrayBuffer;
 }
 
 export const db = new Dexie("learnlink") as Dexie & {
