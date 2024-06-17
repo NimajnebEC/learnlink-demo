@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { startTone, toneFor, type ToneContext } from "$lib/tone";
+	import { startTone, toneFor, type ToneContext } from "$lib/scripts/tone";
 	import { sleep, telephone, type Key } from "$lib";
-	import { playSegments } from "$lib/playback";
-	import type { MenuNode } from "$lib/nodes";
-	import { homeNode } from "$lib/nodes";
+	import { playSegments } from "$lib/scripts/playback";
+	import type { MenuNode } from "$lib/scripts/nodes";
+	import { homeNode } from "$lib/scripts/nodes";
 	import { onMount } from "svelte";
 	import "$lib/global.scss";
 	import "greset";

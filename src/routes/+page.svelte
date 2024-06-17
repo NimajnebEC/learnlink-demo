@@ -1,6 +1,6 @@
 <script>
-	import Phone from "$lib/Phone.svelte";
-	import Title from "$lib/Title.svelte";
+	import Phone from "$lib/components/Phone.svelte";
+	import Title from "$lib/components/Title.svelte";
 
 	let initialised = false;
 

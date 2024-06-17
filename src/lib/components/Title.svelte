@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { faArrowRotateRight, faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
 	import { faGithub } from "@fortawesome/free-brands-svg-icons";
+	import { db } from "../scripts/db";
 	import Fa from "svelte-fa";
-	import { db } from "./db";
 
 	function reset() {
 		if (!confirm("Are you sure you want to reset all data?")) return;

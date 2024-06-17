@@ -1,4 +1,4 @@
-import type { Key } from "$lib";
+import type { Key } from "$lib/scripts";
 import { db } from "./db";
 
 const LAYERS = 3;
