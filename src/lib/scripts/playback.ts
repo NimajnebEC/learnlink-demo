@@ -1,5 +1,3 @@
-import audio from "$lib/assets/confirmation.mp3?url";
-
 import type { Segment } from "./nodes";
 import { toneFor } from "./tone";
 
@@ -26,7 +24,7 @@ export function play(src: string | ArrayBuffer, aborter: AbortController) {
 
 		let buffer: ArrayBuffer;
 		if (src instanceof ArrayBuffer) buffer = src;
-		else buffer = await fetch(audio).then((r) => r.arrayBuffer());
+		else buffer = await fetch(src).then((r) => r.arrayBuffer());
 
 		source.buffer = await context.decodeAudioData(buffer);
 		source.connect(context.destination);
