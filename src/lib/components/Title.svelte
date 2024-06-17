@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { faArrowRotateRight, faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
 	import { faGithub } from "@fortawesome/free-brands-svg-icons";
+	import { populate } from "$lib/inital";
 	import { db } from "../scripts/db";
 	import Fa from "svelte-fa";
 
-	function reset() {
+	async function reset() {
 		if (!confirm("Are you sure you want to reset all data?")) return;
-		db.category.clear();
-		db.lesson.clear();
+		await Promise.all([db.category.clear(), db.lesson.clear()]);
+		await populate();
+
+		location.reload();
 	}
 </script>
 

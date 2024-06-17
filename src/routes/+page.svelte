@@ -3,7 +3,11 @@
 	import audio from "$lib/assets/confirmation.mp3?url";
 	import Phone from "$lib/components/Phone.svelte";
 	import Title from "$lib/components/Title.svelte";
+	import { populate } from "$lib/inital";
+	import { db } from "$lib/scripts/db";
+	import { onMount } from "svelte";
 
+	let stream: MediaStream;
 	let initialised = false;
 
 	function initialise() {
@@ -15,14 +19,23 @@
 		speechSynthesis.speak(u);
 		initialised = true;
 	}
+
+	onMount(async () => {
+		db.category.count().then((c) => (c == 0 ? populate() : null));
+		try {
+			stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+		} catch (e) {}
+	});
 </script>
 
 <Title />
 
 {#if initialised}
-	<Phone />
-{:else}
+	<Phone {stream} />
+{:else if stream}
 	<button on:click={initialise}>Start</button>
+{:else}
+	<h1>Please allow Microphone</h1>
 {/if}
 
 <style lang="scss">

@@ -4,7 +4,6 @@
 	import { playSegments } from "$lib/scripts/playback";
 	import type { MenuNode } from "$lib/scripts/nodes";
 	import { homeNode } from "$lib/scripts/nodes";
-	import { onMount } from "svelte";
 	import "$lib/global.scss";
 	import "greset";
 
@@ -12,12 +11,9 @@
 	let tone: ToneContext | undefined;
 	let aborter: AbortController;
 	let node: MenuNode | null;
-	let stream: MediaStream;
 	let number = "";
 
-	onMount(async () => {
-		stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-	});
+	export let stream: MediaStream;
 
 	async function press(key: Key) {
 		number += key.toString();
