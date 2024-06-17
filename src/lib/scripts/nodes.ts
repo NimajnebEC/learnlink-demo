@@ -88,7 +88,7 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 async function recordLesson(category: string): Promise<MenuNode> {
 	const index = (await db.lesson.where({ category }).count()) + 1;
 
-	if (index >= 9)
+	if (index > 9)
 		return {
 			segments: [{ say: "Too many lessons. Please try a different topic." }],
 			press: async () => null,
