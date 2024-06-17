@@ -42,7 +42,8 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 		segments.push({ play: entry.name });
 	}
 
-	if (record) segments.push({ say: "Press 0 to create." });
+	const canAdd = record && segments.length < 9;
+	if (canAdd) segments.push({ say: "Press 0 to create." });
 	const self: MenuNode = {
 		segments,
 		async press(key) {
@@ -51,6 +52,8 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 				if (entry) return await categoryNode(entry.code, record);
 				return self;
 			}
+
+			if (!canAdd) return self;
 
 			return {
 				segments: [
@@ -83,7 +86,13 @@ async function categoryNode(parent: string, record: boolean): Promise<MenuNode> 
 }
 
 async function recordLesson(category: string): Promise<MenuNode> {
-	const index = ((await db.lesson.where({ category }).count()) + 1).toString();
+	const index = (await db.lesson.where({ category }).count()) + 1;
+
+	if (index >= 9)
+		return {
+			segments: [{ say: "Too many lessons. Please try a different topic." }],
+			press: async () => null,
+		};
 
 	return {
 		segments: [{ say: `Reecord lesson ${index} after the tone` }, { tone: 5 }],
@@ -95,8 +104,8 @@ async function recordLesson(category: string): Promise<MenuNode> {
 			await db.lesson.add({
 				code: `${category}${index}`,
 				recording: await blob.arrayBuffer(),
+				index: index.toString(),
 				category,
-				index,
 			});
 		},
 	};
